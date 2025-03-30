@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "start": "nodemon"
+    "dev": "nodemon"
   },
   "dependencies": {
     "aws-ssl-profiles": "^1.1.2",

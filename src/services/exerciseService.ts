@@ -10,16 +10,24 @@ export async function getUserAndDefaultExercises(userid:string) {
   return exerciseList
 }
 
-export async function createExercise(userid:string, exercise_name:string) {
+export async function createExercise(userid:string, exercise_name:string, muscleGroupId:string) {
   const result = await queryDatabase("INSERT INTO exercises (user_id, exercise_name, is_default) VALUES (?, ?, ?);", [userid, exercise_name, 0]);
 
-  // Step 2: Get the ID of the newly created row
+  // Get the ID of the newly created row
   const insertedId = result.insertId;
-  // Step 3: Retrieve the full exercise row using the ID
+  
+  // Retrieve the full exercise row using the ID
   const createdExercise = await queryDatabase(
     "SELECT * FROM exercises WHERE id = ? LIMIT 1;",
     [insertedId]
   );
+
+  const muscleGroupInsertion = await queryDatabase(
+    "INSERT INTO exercise_muscles (exercise_id, muscle_group_id) VALUES (?, ?);",
+    [insertedId, muscleGroupId]
+  );
+
+  
   
   return createdExercise[0];
 }

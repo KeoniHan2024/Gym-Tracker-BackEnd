@@ -17,7 +17,7 @@ export async function handleExerciseList(req: Request, res: Response) {
 
 export async function handleExerciseCreation(req: Request, res: Response) {
   try {
-    const createdExercise = await createExercise(req.user.userid, req.body.exercise_name);
+    const createdExercise = await createExercise(req.user.userid, req.body.exercise_name, req.body.muscleGroup);
     return res.status(201).json(createdExercise);
   } catch (error) {
     return res.status(401).json({ message: "Couldn't Add Exercise" });

@@ -9,6 +9,8 @@ dotenv.config();
 
 const usersRouter = require('./routes/users')
 const exercisesRouter = require('./routes/exercises')
+const musclegroupRouter = require('./routes/musclegroups')
+
 
 const app = express();
 app.use(cors({
@@ -21,8 +23,7 @@ app.use(bodyParser.json());
 ///////// Setting Routes
 app.use('/users', usersRouter);
 app.use('/exercises', exercisesRouter);
-
-
+app.use('/musclegroups', musclegroupRouter);
 
 
 //////
