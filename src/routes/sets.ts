@@ -7,7 +7,7 @@ const express = require('express');
 const router = express.Router();
 
 // router.get("/", authenticateToken, (handleExerciseList));
-router.get("/createSet", authenticateToken, (handleSetCreation));
+router.post("/createSet", authenticateToken, (handleSetCreation));
 
 
 module.exports = router;

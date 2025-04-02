@@ -10,6 +10,11 @@ export async function getUserAndDefaultExercises(userid:string) {
   return exerciseList
 }
 
+export async function getExerciseID(user_id:string, exerciseName:string) {
+  const exerciseID = await queryDatabase("SELECT * FROM exercises WHERE (user_id = ? OR is_default = 1) AND exercise_name = ?;", [user_id, exerciseName]);
+  return exerciseID
+}
+
 export async function createExercise(userid:string, exercise_name:string, muscleGroupId:string) {
   const result = await queryDatabase("INSERT INTO exercises (user_id, exercise_name, is_default) VALUES (?, ?, ?);", [userid, exercise_name, 0]);
 
