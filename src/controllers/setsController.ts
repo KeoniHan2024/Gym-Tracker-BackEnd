@@ -2,6 +2,7 @@ import { User } from './../models/User';
 import { NextFunction, Request, Response } from "express";
 import { createWeightSet, createDistanceSet, createTimeSet } from "../services/setsService";
 import { getExerciseID } from "../services/exerciseService";
+import { queryDatabase } from '../config/db';
 
 
 export async function handleSetCreation(req: Request, res: Response) {
@@ -14,6 +15,12 @@ export async function handleSetCreation(req: Request, res: Response) {
         case "weight":
           if (payload.exercise_name != null && payload.weight != null && payload.units  != null && payload.reps != null && payload.date_worked != null) {
             createdSet = await createWeightSet(payload.date_worked, payload.weight, payload.units, payload.reps, req.user.userid, exercise_id);
+
+            // add notes to it if there were notes
+            if (payload.notes != '') {
+              const newId:string = createdSet[0].id
+              await queryDatabase('UPDATE sets SET notes=? WHERE id = ?', [String(payload.notes), newId])
+            }
           }
           else {
             return res.status(400).json({ message: "One or more fields are invalid or empty" });
@@ -26,6 +33,12 @@ export async function handleSetCreation(req: Request, res: Response) {
           else {
             return res.status(400).json({ message: "One or more fields are invalid or empty" });
           }
+
+          // add notes to it if there were notes
+          if (payload.notes != '') {
+            const newId:string = createdSet[0].id
+            await queryDatabase('UPDATE sets SET notes=? WHERE id = ?', [String(payload.notes), newId])
+          }
           break
         case "time":
           if (payload.duration_seconds == 0) {
@@ -36,6 +49,12 @@ export async function handleSetCreation(req: Request, res: Response) {
           }
           else {
             return res.status(400).json({ message: "One or more fields are invalid or empty" });
+          }
+
+          // add notes to it if there were notes
+          if (payload.notes != '') {
+            const newId:string = createdSet[0].id
+            await queryDatabase('UPDATE sets SET notes=? WHERE id = ?', [String(payload.notes), newId])
           }
           break
       }
