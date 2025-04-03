@@ -1,8 +1,6 @@
-import { query } from "express";
 import { queryDatabase } from "../config/db";
 import { User } from "../models/User";
 import { encryptPassword, comparePasswords } from "../helpers/hashing";
-import { hash } from "crypto";
 import jwt from 'jsonwebtoken';
 
 const SECRET_KEY = process.env.ACCESS_TOKEN_SECRET as string;

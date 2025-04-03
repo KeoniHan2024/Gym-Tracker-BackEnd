@@ -1,4 +1,3 @@
-import { User } from './../models/User';
 import { NextFunction, Request, Response } from "express";
 import { createWeightSet, createDistanceSet, createTimeSet } from "../services/setsService";
 import { getExerciseID } from "../services/exerciseService";

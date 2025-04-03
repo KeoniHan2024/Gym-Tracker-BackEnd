@@ -1,4 +1,3 @@
-import { createPool } from "mysql2";
 const mysql = require('mysql2');
 
 export const pool = mysql.createPool({
