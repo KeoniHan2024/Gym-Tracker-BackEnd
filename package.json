@@ -1,6 +1,7 @@
 {
   "scripts": {
-    "dev": "nodemon"
+    "dev": "nodemon",
+    "start" : "node index.js"
   },
   "dependencies": {
     "aws-ssl-profiles": "^1.1.2",
