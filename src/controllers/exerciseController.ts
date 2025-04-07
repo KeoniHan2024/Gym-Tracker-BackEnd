@@ -3,12 +3,23 @@ import {
   createExercise,
   getAllExercises,
   getUserAndDefaultExercises,
+  getNonEmptyUserExercises
 } from "../services/exerciseService";
 import { isBlank } from "../helpers/text";
 
 export async function handleExerciseList(req: Request, res: Response) {
   try {
     const exerciseList = await getUserAndDefaultExercises(req.user.userid);
+    return res.status(200).json(exerciseList);
+  } catch (error) {
+    return res.status(401).json({ message: "Internal" });
+  }
+}
+
+export async function handleNonEmptyExerciseList(req: Request, res: Response) {
+  try {
+    // console.log(req)
+    const exerciseList = await getNonEmptyUserExercises(req.user.userid);
     return res.status(200).json(exerciseList);
   } catch (error) {
     return res.status(401).json({ message: "Internal" });

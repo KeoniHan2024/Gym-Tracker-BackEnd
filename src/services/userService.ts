@@ -43,10 +43,10 @@ export async function verifyLogin(email: string, password:string ) {
     if (!passwordMatch) {
         throw new Error("Invalid email or password"); // Wrong password
     }
-
+    
     // Generate JWT token
     const token = jwt.sign(
-        { userid: user.id, email: user.email }, 
+        { userid: user.user_id, email: user.email }, 
         SECRET_KEY, 
         {expiresIn: "1h"}
         );
