@@ -16,8 +16,13 @@ export async function getNonEmptyUserExercises(userid:string) {
 }
 
 export async function getExerciseID(user_id:string, exerciseName:string) {
-  const exerciseID = await queryDatabase("SELECT * FROM exercises WHERE (user_id = ? OR is_default = 1) AND exercise_name = ?;", [user_id, exerciseName]);
-  return exerciseID[0].id
+  try {
+    const exerciseID = await queryDatabase("SELECT * FROM exercises WHERE (user_id = ? OR is_default = 1) AND exercise_name = ?;", [user_id, exerciseName]);
+    return exerciseID[0].exercise_id
+  }
+  catch (error) {
+    return error
+  }
 }
 
 export async function createExercise(userid:string, exercise_name:string, muscleGroupId:string) {
@@ -28,7 +33,7 @@ export async function createExercise(userid:string, exercise_name:string, muscle
   
   // Retrieve the full exercise row using the ID
   const createdExercise = await queryDatabase(
-    "SELECT * FROM exercises WHERE id = ? LIMIT 1;",
+    "SELECT * FROM exercises WHERE exercise_id = ? LIMIT 1;",
     [insertedId]
   );
 
