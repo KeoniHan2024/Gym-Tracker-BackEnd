@@ -80,6 +80,7 @@ export async function handleGetSet(req: Request, res: Response ) {
     // get all weight sets that are for this exercise id 
     const query = req.query
     const result: weightSet[] = await getWeightSetsForExercise(query.exercise_id as string, req.user.userid)
+    var setsPerDay: {[date: string] : number[] } = {};
 
     const groupedSets = averageWeightPerRep(result)
 
@@ -87,13 +88,20 @@ export async function handleGetSet(req: Request, res: Response ) {
     const dates = Object.keys(groupedSets)
     dates.sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
 
-    // make an array where each date (key) is linked to an element which will be a datapoint for the graph
+    // make an array where each date (key)   is linked to an element which will be a datapoint for the graph
     const averages = dates.map((date) => {
-        const setsForDate = groupedSets[date];
-        const weightList = setsForDate.map((set)=> {return {weight: set.weight, reps: set.reps}})
+      const setsForDate = groupedSets[date];
+        const weightList = setsForDate.map((set)=> {return {weight: set.weight, reps: set.reps}});
+        if (!setsPerDay[date]) {
+          setsPerDay[date] = [];
+        }
+        for (let i=0; i< setsForDate.length; i++) {
+          const weightArray = setsForDate.map((set)=> {return parseFloat(set.weight.toFixed(2));}) 
+          setsPerDay[date].push(...weightArray);
+        }
         return averageOfList(weightList)
     })
 
     // return a list of the dates and a list of the average weight
-    return res.status(201).json({ labels: dates, averages: averages, groupedSets: groupedSets});
+    return res.status(201).json({ labels: dates, averages: averages, groupedSets: groupedSets, setsPerDay: setsPerDay});
 }

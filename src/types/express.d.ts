@@ -21,3 +21,4 @@ interface weightSet {
   distance?: number,
   exercise_type: string
 }
+
