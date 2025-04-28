@@ -20,7 +20,6 @@ export async function handleExerciseList(req: Request, res: Response) {
 
 export async function handleNonEmptyExerciseList(req: Request, res: Response) {
   try {
-    // console.log(req)
     const exerciseList = await getNonEmptyUserExercises(req.user.userid);
     return res.status(200).json(exerciseList);
   } catch (error) {

@@ -17,3 +17,9 @@ export function averageWeightPerRep(sets: weightSet[]) {
     
     return setsGroupedByDate
 }
+
+
+export function groupSets(sets:any) {
+
+
+}

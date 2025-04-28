@@ -4,6 +4,7 @@ import {
   createDistanceSet,
   createTimeSet,
   getWeightSetsForExercise,
+  getAllSetsForUser,
 } from "../services/setsService";
 import { getExerciseID } from "../services/exerciseService";
 import { queryDatabase } from "../config/db";
@@ -34,7 +35,8 @@ export async function handleSetCreation(req: Request, res: Response) {
             payload.units,
             payload.reps,
             req.user.userid,
-            exercise_id
+            exercise_id,
+            payload.exercise_name,
           );
 
           // add notes to it if there were notes
@@ -63,7 +65,8 @@ export async function handleSetCreation(req: Request, res: Response) {
             payload.units,
             req.user.userid,
             exercise_id,
-            payload.distance
+            payload.distance,
+            payload.exercise_name
           );
         } else {
           return res
@@ -96,7 +99,8 @@ export async function handleSetCreation(req: Request, res: Response) {
             payload.date_worked,
             payload.duration_seconds,
             req.user.userid,
-            exercise_id
+            exercise_id,
+            payload.exercise_name
           );
         } else {
           return res
@@ -137,11 +141,19 @@ function averageOfList(list: { weight: number; reps: number }[]): number {
   return weightSum / repsSum;
 }
 
-export async function handleGetSet(req: Request, res: Response) {
+export async function handleGetAllSetsForUser(req: Request, res: Response) {
+  try {
+    const allSets = await getAllSetsForUser(req.user.userid);
+    return res.status(201).json({ allSets: allSets });
+  } catch (err) {
+    return res.status(401).json({ message: "Couldn't Get Sets" });
+  }
+}
+
+export async function handleGetAllSetsForExercise(req: Request, res: Response) {
   // get all weight sets that are for this exercise id
-  const query = req.query;
   const result: weightSet[] = await getWeightSetsForExercise(
-    query.exercise_id as string,
+    req.params.exercise_id as string,
     req.user.userid
   );
   var setWeights: { [date: string]: number[] } = {};
@@ -160,25 +172,23 @@ export async function handleGetSet(req: Request, res: Response) {
       return { weight: set.weight, reps: set.reps };
     });
 
-    setWeights[date] = setsForDate.map((set)=> {
-      return set.weight
-    })
+    setWeights[date] = setsForDate.map((set) => {
+      return set.weight;
+    });
 
-    setReps[date] = setsForDate.map((set)=> {
-      return set.reps
-    })
+    setReps[date] = setsForDate.map((set) => {
+      return set.reps;
+    });
 
     return averageOfList(weightList);
   });
 
   // return a list of the dates and a list of the average weight
-  return res
-    .status(201)
-    .json({
-      labels: dates,
-      averages: averages,
-      groupedSets: groupedSets,
-      setWeights: setWeights,
-      setReps: setReps
-    });
+  return res.status(201).json({
+    labels: dates,
+    averages: averages,
+    groupedSets: groupedSets,
+    setWeights: setWeights,
+    setReps: setReps,
+  });
 }
