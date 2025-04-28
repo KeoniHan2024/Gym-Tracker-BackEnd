@@ -11,6 +11,7 @@ const usersRouter = require('./routes/users')
 const exercisesRouter = require('./routes/exercises')
 const musclegroupRouter = require('./routes/musclegroups')
 const setsRouter = require('./routes/sets')
+const bodyweightsRouter= require('./routes/bodyweights')
 
 
 
@@ -26,7 +27,8 @@ app.use(bodyParser.json());
 app.use('/users', usersRouter);
 app.use('/exercises', exercisesRouter);
 app.use('/musclegroups', musclegroupRouter);
-app.use('/sets', setsRouter)
+app.use('/sets', setsRouter);
+app.use('/bodyweights', bodyweightsRouter)
 
 
 //////
