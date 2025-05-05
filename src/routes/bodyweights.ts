@@ -1,4 +1,4 @@
-import { handleAddBodyweight } from "../controllers/bodyweightController";
+import { handleAddBodyweight, handleGetUserBodyweightHistory } from "../controllers/bodyweightController";
 import authenticateToken from "../helpers/auth";
 
 
@@ -10,6 +10,9 @@ const router = express.Router();
 
 // POST routes
 router.post("/create", authenticateToken, (handleAddBodyweight));
+
+// GET routes
+router.get("/", authenticateToken, (handleGetUserBodyweightHistory));
 
 
 module.exports = router;

@@ -11,3 +11,15 @@ export async function createBodyWeight(userid:string, bodyweight:string, units: 
     
   }
 }
+
+
+export async function getUserBodyweightHistory(userid:string) {
+  try {
+    const result = await queryDatabase("SELECT * FROM bodyweights WHERE user_id = ?", [userid])
+    return result
+  }
+  catch (error) {
+
+  }
+
+}

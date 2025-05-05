@@ -22,3 +22,11 @@ interface weightSet {
   exercise_type: string
 }
 
+interface bodyweightInfo {
+  bodyweight_id?: number,
+  user_id?: number,
+  weight?: number,
+  log_date?: string,
+  units: string
+}
+
