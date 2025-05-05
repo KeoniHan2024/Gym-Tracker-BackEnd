@@ -1,3 +1,4 @@
+import { set } from "mongoose";
 import { queryDatabase } from "../config/db";
 
 export async function createWeightSet(
@@ -115,4 +116,15 @@ export async function getAllSetsForUser(user_id: string) {
   } // remove the return from inside the loop
 
   return resultMap;
+}
+
+export async function deleteSet(user_id:string, set_id:string) {
+
+  try {
+    await queryDatabase("DELETE FROM sets WHERE user_id = ? and set_id = ?", [user_id, set_id])
+  }
+  catch (err) {
+
+  }
+
 }

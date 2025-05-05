@@ -5,6 +5,7 @@ import {
   createTimeSet,
   getWeightSetsForExercise,
   getAllSetsForUser,
+  deleteSet,
 } from "../services/setsService";
 import { getExerciseID } from "../services/exerciseService";
 import { queryDatabase } from "../config/db";
@@ -191,4 +192,14 @@ export async function handleGetAllSetsForExercise(req: Request, res: Response) {
     setWeights: setWeights,
     setReps: setReps,
   });
+}
+
+
+export async function handleDeleteSet(req: Request, res:Response) {
+  try {
+    const allSets = await deleteSet(req.user.userid, req.params.set_id);
+    return res.status(201).json({ message: "Deleted Set!" });
+  } catch (err) {
+    return res.status(401).json({ message: "Couldn't Delete Set" });
+  }
 }
