@@ -1,5 +1,6 @@
 import {
   handleAddBodyweight,
+  handleDeleteAllBodyweights,
   handleGetUserBodyweightHistory,
   handleImportBodyweightFile,
 } from "../controllers/bodyweightController";
@@ -10,16 +11,23 @@ const router = express.Router();
 const multer = require("multer");
 const upload = multer({ dest: "uploads/" }); // Files saved in 'uploads/'
 
+
+// delete routes
+router.delete(
+  "/",
+  authenticateToken,
+  handleDeleteAllBodyweights
+);
+
+
+// POST routes
+router.post("/create", authenticateToken, handleAddBodyweight);
 router.post(
   "/import",
   authenticateToken,
   upload.single("file"), // Multer middleware (expects a file with field name "file")
   handleImportBodyweightFile
 );
-
-
-// POST routes
-router.post("/create", authenticateToken, handleAddBodyweight);
 
 // GET routes
 router.get("/", authenticateToken, handleGetUserBodyweightHistory);

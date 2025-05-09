@@ -19,11 +19,24 @@ export async function getUserBodyweightHistory(userid:string) {
     return result
   }
   catch (error) {
-
   }
 }
 
 
 export async function importBodyweightFile(user_id: string, weight: string, date:string) {
-  await queryDatabase("INSERT INTO bodyweights (user_id, weight, log_date, units) VALUES (?, ?, ?, ?)", [user_id, weight, date, "lbs"])
+  try {
+    await queryDatabase("INSERT INTO bodyweights (user_id, weight, log_date, units) VALUES (?, ?, ?, ?)", [user_id, weight, date, "lbs"])
+  }
+  catch (error) {
+    throw error
+  }
+}
+
+export async function deleteAllBodyweights(user_id: string) {
+  try {
+    await queryDatabase("DELETE FROM bodyweights WHERE user_id = ?;",[user_id])
+  }
+  catch (err) {
+    throw err
+  }
 }

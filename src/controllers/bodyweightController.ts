@@ -1,6 +1,7 @@
 import { NextFunction, query, Request, Response } from "express";
 import {
   createBodyWeight,
+  deleteAllBodyweights,
   getUserBodyweightHistory,
   importBodyweightFile,
 } from "../services/bodyweightService";
@@ -57,13 +58,11 @@ export async function handleGetUserBodyweightHistory(
     const filteredBodyweights = filteredData.map((item) => item.weight);
     const filteredDates = filteredData.map((item) => item.date);
 
-    return res
-      .status(200)
-      .json({
-        data: filteredBodyweights,
-        labels: filteredDates,
-        message: "successfully retrieved bodyweight for user",
-      });
+    return res.status(200).json({
+      data: filteredBodyweights,
+      labels: filteredDates,
+      message: "successfully retrieved bodyweight for user",
+    });
   } catch (error) {
     return res.status(401).json({ message: "couldn't get bodyweights" });
   }
@@ -73,24 +72,41 @@ export async function handleImportBodyweightFile(
   req: MulterRequest,
   res: Response
 ) {
-  if (req.file) {
-    const csvArray = await readFile(req.file.path);
-    let recentWeight = 0; // keep track of latest weight
+  try {
+    if (req.file?.path) {
+      const csvArray = await readFile(req.file.path);
 
-    for (let i = 0; i < csvArray.length; i++) {
-      const date = csvArray[i][0];
-      let weight = csvArray[i][1];
+      const dataToInsert = [];
+      let recentWeight = 0;
 
-      // when the weight is a string then use the last number recorded
-      if (typeof weight != "number") {
-        weight = recentWeight;
+      for (let i = 0; i < csvArray.length; i++) {
+        const date = csvArray[i][0];
+        let weight = csvArray[i][1];
+
+        if (typeof weight !== "number") {
+          weight = recentWeight;
+        }
+        recentWeight = weight;
+        dataToInsert.push([req.user.userid, weight, date, "lbs"]);
       }
-
-      importBodyweightFile(req.user.userid, weight as unknown as string, date);
-      recentWeight = weight;
+      // Use a single query to insert all the data
+      if (dataToInsert.length > 0) {
+        const query =
+          "INSERT INTO bodyweights (user_id, weight, log_date, units) VALUES ?";
+        await queryDatabase(query, [dataToInsert]); // Pass all values at once
+      }
     }
     return res.status(200).json();
-  } else {
-    return;
+  } catch (err) {
+    return res.status(401).json();
+  }
+}
+
+export async function handleDeleteAllBodyweights(req: Request, res: Response) {
+  try {
+    await deleteAllBodyweights(req.user.userid)
+    return res.status(200).json();
+  } catch (error) {
+    return res.status(401).json();
   }
 }
