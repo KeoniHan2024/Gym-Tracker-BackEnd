@@ -15,11 +15,15 @@ export async function createBodyWeight(userid:string, bodyweight:string, units: 
 
 export async function getUserBodyweightHistory(userid:string) {
   try {
-    const result = await queryDatabase("SELECT * FROM bodyweights WHERE user_id = ?", [userid])
+    const result = await queryDatabase("SELECT * FROM bodyweights WHERE user_id = ? ORDER BY log_date", [userid])
     return result
   }
   catch (error) {
 
   }
+}
 
+
+export async function importBodyweightFile(user_id: string, weight: string, date:string) {
+  await queryDatabase("INSERT INTO bodyweights (user_id, weight, log_date, units) VALUES (?, ?, ?, ?)", [user_id, weight, date, "lbs"])
 }
