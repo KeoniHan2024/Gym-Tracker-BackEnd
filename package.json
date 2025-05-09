@@ -1,7 +1,7 @@
 {
   "scripts": {
     "dev": "nodemon",
-    "start" : "node index.js"
+    "start": "node index.js"
   },
   "dependencies": {
     "aws-ssl-profiles": "^1.1.2",
@@ -15,6 +15,7 @@
     "express": "^4.21.2",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.12.1",
+    "multer": "^1.4.5-lts.2",
     "mysql2": "^3.13.0"
   },
   "devDependencies": {

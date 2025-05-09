@@ -197,7 +197,7 @@ export async function handleGetAllSetsForExercise(req: Request, res: Response) {
 
 export async function handleDeleteSet(req: Request, res:Response) {
   try {
-    const allSets = await deleteSet(req.user.userid, req.params.set_id);
+    await deleteSet(req.user.userid, req.params.set_id);
     return res.status(201).json({ message: "Deleted Set!" });
   } catch (err) {
     return res.status(401).json({ message: "Couldn't Delete Set" });

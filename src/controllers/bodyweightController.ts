@@ -32,3 +32,9 @@ export async function handleGetUserBodyweightHistory(req: Request, res: Response
     return res.status(401).json({ message: "couldn't get bodyweights" });
   }
 }
+
+
+export async function handleImportBodyweightFile(req: Request, res:Response) {
+  console.log(req)
+  return
+}
