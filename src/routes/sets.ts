@@ -1,5 +1,5 @@
 import { get } from "http";
-import { handleDeleteSet, handleGetAllSetsForExercise, handleGetAllSetsForUser, handleSetCreation } from "../controllers/setsController";
+import { handleDeleteSet, handleGetAllSetsForExercise, handleGetAllSetsForUser, handleImportSetsFile, handleSetCreation } from "../controllers/setsController";
 import authenticateToken from "../helpers/auth";
 import { getgid } from "process";
 
@@ -7,6 +7,9 @@ import { getgid } from "process";
 
 const express = require('express');
 const router = express.Router();
+const multer = require("multer");
+const upload = multer({ dest: "uploads/" }); // Files saved in 'uploads/'
+
 
 // router.get("/", authenticateToken, (handleExerciseList));
 
@@ -24,12 +27,9 @@ router.get("/:exercise_id", authenticateToken, (handleGetAllSetsForExercise))
 /* DELETE REQUESTS */
 router.delete("/:set_id", authenticateToken, (handleDeleteSet))
 
-
-
-
-
 //post requests
 router.post("/createSet", authenticateToken, (handleSetCreation));
+router.post("/import", authenticateToken,  upload.single("file"), (handleImportSetsFile));
 
 
 

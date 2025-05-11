@@ -11,6 +11,10 @@ import { getExerciseID } from "../services/exerciseService";
 import { queryDatabase } from "../config/db";
 import { weightSet } from "../types/express";
 import { averageWeightPerRep } from "../helpers/setTransformation";
+import { processExerciseData, readSetsFile, transformToIndividualSets } from "../helpers/fileReading";
+interface MulterRequest extends Request {
+  file?: Express.Multer.File; // Define the 'file' property
+}
 
 export async function handleSetCreation(req: Request, res: Response) {
   var createdSet;
@@ -37,7 +41,7 @@ export async function handleSetCreation(req: Request, res: Response) {
             payload.reps,
             req.user.userid,
             exercise_id,
-            payload.exercise_name,
+            payload.exercise_name
           );
 
           // add notes to it if there were notes
@@ -194,12 +198,28 @@ export async function handleGetAllSetsForExercise(req: Request, res: Response) {
   });
 }
 
-
-export async function handleDeleteSet(req: Request, res:Response) {
+export async function handleDeleteSet(req: Request, res: Response) {
   try {
     await deleteSet(req.user.userid, req.params.set_id);
     return res.status(201).json({ message: "Deleted Set!" });
   } catch (err) {
     return res.status(401).json({ message: "Couldn't Delete Set" });
+  }
+}
+
+// import weights
+export async function handleImportSetsFile(req: MulterRequest, res: Response) {
+  try {
+    const userId = req.user.userid as string
+    if (req.file?.path) {
+      readSetsFile(req.file.path, userId).then(async (exrciseDataArray) => {
+        // const test = transformToIndividualSets(exrciseDataArray)
+        // console.log(test)
+        // processExerciseData(exrciseDataArray, userId)
+      });
+    }
+    return res.status(201).json({ message: "Imported Sets" });
+  } catch (err) {
+    return res.status(401).json({ message: "Couldn't Import Sets" });
   }
 }

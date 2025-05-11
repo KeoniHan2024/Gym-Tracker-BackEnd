@@ -1,7 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import {
   createExercise,
-  getAllExercises,
   getUserAndDefaultExercises,
   getNonEmptyUserExercises,
   editExercise,

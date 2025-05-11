@@ -8,7 +8,7 @@ import {
 import { bodyweightInfo } from "../types/express";
 import { convertDate } from "../helpers/dates";
 import multer from "multer";
-import { readFile } from "../helpers/fileReading";
+import { readBodyweightFile } from "../helpers/fileReading";
 import { queryDatabase } from "../config/db";
 import { calculateMovingAverage } from "../helpers/graph";
 interface MulterRequest extends Request {
@@ -74,7 +74,7 @@ export async function handleImportBodyweightFile(
 ) {
   try {
     if (req.file?.path) {
-      const csvArray = await readFile(req.file.path);
+      const csvArray = await readBodyweightFile(req.file.path);
 
       const dataToInsert = [];
       let recentWeight = 0;

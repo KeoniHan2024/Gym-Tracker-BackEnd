@@ -1,6 +1,10 @@
 import { set } from "mongoose";
 import { queryDatabase } from "../config/db";
 
+type Set = {
+  id: number;
+  name: string;
+};
 export async function createWeightSet(
   date_worked: string,
   weight: string,
@@ -85,10 +89,6 @@ export async function getWeightSetsForExercise(
   return result;
 }
 
-type Set = {
-  id: number;
-  name: string;
-};
 
 export async function getAllSetsForUser(user_id: string) {
   const result = await queryDatabase(

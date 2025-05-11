@@ -1,18 +1,31 @@
 import { queryDatabase } from "../config/db";
 
 export async function getAllExercises() {
-  const exerciseList = await queryDatabase(
-    "SELECT * FROM exercises WHERE user_id IS NULL;"
-  );
-  return exerciseList;
+  try {
+    const exerciseList = await queryDatabase(
+      "SELECT * FROM exercises WHERE is_default = 1;"
+    );
+    if (!Array.isArray(exerciseList)) {
+      throw new Error("Invalid response from database");
+    }
+    return exerciseList;
+  } catch (err) {
+    console.error("Failed to get exercises:", err);
+    throw new Error("Could not retrieve exercise list");
+  }
 }
 
 export async function getUserAndDefaultExercises(userid: string) {
-  const exerciseList = await queryDatabase(
-    "SELECT * FROM exercises WHERE user_id = ? OR is_default = 1;",
-    [userid]
-  );
-  return exerciseList;
+  try {
+    const exerciseList = await queryDatabase(
+      "SELECT * FROM exercises WHERE user_id = ? OR is_default = 1;",
+      [userid]
+    );
+
+    return exerciseList;
+  } catch (err) {
+    throw err;
+  }
 }
 
 export async function getNonEmptyUserExercises(userid: string) {
@@ -25,13 +38,22 @@ export async function getNonEmptyUserExercises(userid: string) {
 
 export async function getExerciseID(user_id: string, exerciseName: string) {
   try {
-    const exerciseID = await queryDatabase(
-      "SELECT * FROM exercises WHERE (user_id = ? OR is_default = 1) AND exercise_name = ?;",
-      [user_id, exerciseName]
+    const results = await queryDatabase(
+      `SELECT 
+         exercise_id,
+         exercise_name
+       FROM exercises 
+       WHERE (user_id = ? OR is_default = 1) 
+       AND LOWER(exercise_name) = LOWER(?)
+       LIMIT 1`,
+      [user_id, exerciseName.trim()]
     );
-    return exerciseID[0].exercise_id;
+    if (!results?.[0]?.exercise_id) {
+      throw new Error("Exercise not found");
+    }
+    return results[0].exercise_id;
   } catch (error) {
-    return error;
+    throw error;
   }
 }
 
@@ -61,10 +83,15 @@ export async function createExercise(
   return createdExercise[0];
 }
 
-export async function editExercise(exercise_id: string, exercise_name:string) {
-  await queryDatabase("UPDATE exercises SET exercise_name = ? WHERE exercise_id = ?",[exercise_name,exercise_id])
+export async function editExercise(exercise_id: string, exercise_name: string) {
+  await queryDatabase(
+    "UPDATE exercises SET exercise_name = ? WHERE exercise_id = ?",
+    [exercise_name, exercise_id]
+  );
 }
 
 export async function deleteExercise(exercise_id: string) {
-  await queryDatabase("DELETE FROM exercises WHERE exercise_id = ?",[exercise_id])
+  await queryDatabase("DELETE FROM exercises WHERE exercise_id = ?", [
+    exercise_id,
+  ]);
 }
