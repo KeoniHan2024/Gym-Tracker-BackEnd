@@ -16,15 +16,16 @@ const bodyweightsRouter= require('./routes/bodyweights')
 
 const app = express();
 const cors = require('cors');
-const corsOptions = {
-  origin: [
-    'http://localhost:5173', // React dev server
-    'https://www.musclemap.co' // Production domain
-  ],
-  methods: ['GET', 'POST', 'OPTIONS'], // Allowed HTTP methods
-  credentials: true, // Allow cookies (if needed)
-};
-app.use(cors(corsOptions));
+// const corsOptions = {
+//   origin: [
+//     'http://localhost:5173', // React dev server
+//     'https://www.musclemap.co' // Production domain
+//   ],
+//   "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+//   "allow_headers": ["Content-Type", "Authorization"],
+//   credentials: true, // Allow cookies (if needed)
+// };
+app.use(cors());
 app.use(compression());
 app.use(cookieParser());
 app.use(bodyParser.json());

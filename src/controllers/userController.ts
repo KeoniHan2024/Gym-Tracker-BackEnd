@@ -40,7 +40,6 @@ export async function handleLoginUser(req: Request, res: Response) {
 
     // find users hash password then use checking function to see if it's right. if it is then it's success
     const userDetails = await verifyLogin(email, password);
-
     return res.status(200).json(userDetails);
   }
   catch(error) {
