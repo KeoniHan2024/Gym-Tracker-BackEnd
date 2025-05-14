@@ -17,14 +17,14 @@ interface MulterRequest extends Request {
 }
 
 export async function handleSetCreation(req: Request, res: Response) {
-  var createdSet;
+  var createdSetID;
   const payload = req.body.payload;
   try {
     const exercise_id = await getExerciseID(
       req.user.userid,
       payload.exercise_name
     );
-
+    
     switch (payload.exercise_type) {
       case "weight":
         if (
@@ -34,7 +34,7 @@ export async function handleSetCreation(req: Request, res: Response) {
           payload.reps != null &&
           payload.date_worked != null
         ) {
-          createdSet = await createWeightSet(
+          createdSetID = await createWeightSet(
             payload.date_worked,
             payload.weight,
             payload.units,
@@ -43,10 +43,10 @@ export async function handleSetCreation(req: Request, res: Response) {
             exercise_id,
             payload.exercise_name
           );
-
+          
           // add notes to it if there were notes
           if (payload.notes != "") {
-            const newId: string = createdSet[0].id;
+            const newId: string = createdSetID;
             await queryDatabase("UPDATE sets SET notes=? WHERE id = ?", [
               String(payload.notes),
               newId,
@@ -65,7 +65,7 @@ export async function handleSetCreation(req: Request, res: Response) {
           payload.units != null &&
           payload.date_worked != null
         ) {
-          createdSet = await createDistanceSet(
+          createdSetID = await createDistanceSet(
             payload.date_worked,
             payload.units,
             req.user.userid,
@@ -81,7 +81,7 @@ export async function handleSetCreation(req: Request, res: Response) {
 
         // add notes to it if there were notes
         if (payload.notes != "") {
-          const newId: string = createdSet[0].id;
+          const newId: string = createdSetID;
           await queryDatabase("UPDATE sets SET notes=? WHERE id = ?", [
             String(payload.notes),
             newId,
@@ -100,7 +100,7 @@ export async function handleSetCreation(req: Request, res: Response) {
           payload.date_worked != null &&
           payload.duration_seconds > 0
         ) {
-          createdSet = await createTimeSet(
+          createdSetID = await createTimeSet(
             payload.date_worked,
             payload.duration_seconds,
             req.user.userid,
@@ -115,7 +115,7 @@ export async function handleSetCreation(req: Request, res: Response) {
 
         // add notes to it if there were notes
         if (payload.notes != "") {
-          const newId: string = createdSet[0].id;
+          const newId: string = createdSetID;
           await queryDatabase("UPDATE sets SET notes=? WHERE id = ?", [
             String(payload.notes),
             newId,

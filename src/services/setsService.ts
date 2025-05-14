@@ -18,17 +18,16 @@ export async function createWeightSet(
     "INSERT INTO sets (date_worked, weight, units, reps, user_id, exercise_id, exercise_type, exercise_name) VALUES (?, ?, ?, ?, ?, ?, ?, ?);",
     [date_worked, weight, units, reps, user_id, exercise_id, "weight", exercise_name]
   );
-
+  
   // Get the ID of the newly created row
   const insertedId = result.insertId;
-
-  // Retrieve the full exercise row using the ID
-  const createdSet = await queryDatabase(
-    "SELECT * FROM sets WHERE id = ? LIMIT 1;",
-    [insertedId]
-  );
-
-  return createdSet;
+  // // Retrieve the full exercise row using the ID
+  // const [createdSet] = await queryDatabase(
+  //   "SELECT * FROM sets WHERE id = ? LIMIT 1;",
+  //   [insertedId]
+  // );
+  
+  return insertedId;
 }
 
 export async function createDistanceSet(
