@@ -6,6 +6,7 @@ import {
   getWeightSetsForExercise,
   getAllSetsForUser,
   deleteSet,
+  editSet,
 } from "../services/setsService";
 import { getExerciseID } from "../services/exerciseService";
 import { queryDatabase } from "../config/db";
@@ -221,5 +222,20 @@ export async function handleImportSetsFile(req: MulterRequest, res: Response) {
     return res.status(201).json({ message: "Imported Sets" });
   } catch (err) {
     return res.status(401).json({ message: "Couldn't Import Sets" });
+  }
+}
+
+export async function handleEditSet(req: Request, res: Response) {
+  try {
+    const date = req.body.payload.date_worked
+    const weight = req.body.payload.weight
+    const reps = req.body.payload.reps
+    const setID = req.params.set_id
+    const userID = req.user.userid
+    await editSet(date, weight, reps, setID, userID)
+    return res.status(201).json({ message: "Edited Set!" });
+  }
+  catch(error) {
+    return res.status(401).json({ message: "Couldn't Edit Set" });
   }
 }
