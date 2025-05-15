@@ -1,6 +1,8 @@
 import {
   handleAddBodyweight,
   handleDeleteAllBodyweights,
+  handleDeleteBodyweight,
+  handleEditBodyweight,
   handleGetUserBodyweightHistory,
   handleImportBodyweightFile,
 } from "../controllers/bodyweightController";
@@ -19,6 +21,8 @@ router.delete(
   handleDeleteAllBodyweights
 );
 
+router.delete("/:bodyweight_id", authenticateToken, handleDeleteBodyweight)
+
 
 // POST routes
 router.post("/create", authenticateToken, handleAddBodyweight);
@@ -28,6 +32,9 @@ router.post(
   upload.single("file"), // Multer middleware (expects a file with field name "file")
   handleImportBodyweightFile
 );
+
+// PATCH routes
+router.patch("/:bodyweight_id", authenticateToken, handleEditBodyweight)
 
 // GET routes
 router.get("/", authenticateToken, handleGetUserBodyweightHistory);

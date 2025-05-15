@@ -2,6 +2,8 @@ import { NextFunction, query, Request, Response } from "express";
 import {
   createBodyWeight,
   deleteAllBodyweights,
+  deleteBodyweight,
+  editBodyweight,
   getUserBodyweightHistory,
   importBodyweightFile,
 } from "../services/bodyweightService";
@@ -59,6 +61,7 @@ export async function handleGetUserBodyweightHistory(
     const filteredDates = filteredData.map((item) => item.date);
 
     return res.status(200).json({
+      rawData: bodyweightObjects.reverse(),
       data: filteredBodyweights,
       labels: filteredDates,
       message: "successfully retrieved bodyweight for user",
@@ -107,6 +110,25 @@ export async function handleDeleteAllBodyweights(req: Request, res: Response) {
     await deleteAllBodyweights(req.user.userid)
     return res.status(200).json();
   } catch (error) {
+    return res.status(401).json();
+  }
+}
+
+export async function handleDeleteBodyweight(req:Request, res: Response) {
+  try {
+    await deleteBodyweight( req.params.bodyweight_id)
+    return res.status(200).json();
+  } catch (error) {
+    return res.status(401).json();
+  }
+}
+
+export async function handleEditBodyweight(req: Request, res: Response) {
+  try {
+    await editBodyweight( req.params.bodyweight_id, req.body.payload.weight, req.body.payload.log_date + " 00:00:00")
+    return res.status(200).json();
+  } catch (error) {
+    console.log("test")
     return res.status(401).json();
   }
 }

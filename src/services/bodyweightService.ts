@@ -40,3 +40,22 @@ export async function deleteAllBodyweights(user_id: string) {
     throw err
   }
 }
+
+export async function deleteBodyweight(bodyweight_id: string) {
+  try {
+    await queryDatabase("DELETE FROM bodyweights WHERE bodyweight_id = ?;",[bodyweight_id])
+  }
+  catch (err) {
+    throw err
+  }
+}
+
+export async function editBodyweight(bodyweight_id: string, weight: string, log_date: string) {
+  try {
+    await queryDatabase("UPDATE bodyweights SET weight = ?, log_date = ? WHERE bodyweight_id = ?;",[weight, log_date, bodyweight_id])
+
+  }
+  catch (err) {
+    throw err
+  }
+}
