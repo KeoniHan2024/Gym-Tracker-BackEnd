@@ -1,5 +1,5 @@
 import { get } from "http";
-import { handleDeleteSet, handleEditSet, handleGetAllSetsForExercise, handleGetAllSetsForUser, handleImportSetsFile, handleSetCreation } from "../controllers/setsController";
+import { handleDeleteAllSets, handleDeleteSet, handleEditSet, handleGetAllSetsForExercise, handleGetAllSetsForUser, handleImportSetsFile, handleSetCreation } from "../controllers/setsController";
 import authenticateToken from "../helpers/auth";
 import { getgid } from "process";
 
@@ -24,6 +24,7 @@ router.get("/:exercise_id", authenticateToken, (handleGetAllSetsForExercise))
 
 /* DELETE REQUESTS */
 router.delete("/:set_id", authenticateToken, (handleDeleteSet))
+router.delete("/", authenticateToken, (handleDeleteAllSets))
 
 /* POST REQUESTS */
 router.post("/createSet", authenticateToken, (handleSetCreation));

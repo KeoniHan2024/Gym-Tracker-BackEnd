@@ -157,3 +157,12 @@ export async function editSet(
     throw err;
   }
 }
+
+export async function deleteAllSets(user_id: string) {
+try {
+    await queryDatabase("DELETE FROM sets WHERE user_id = ?;",[user_id])
+  }
+  catch (err) {
+    throw err
+  }
+}

@@ -7,12 +7,17 @@ import {
   getAllSetsForUser,
   deleteSet,
   editSet,
+  deleteAllSets,
 } from "../services/setsService";
 import { getExerciseID } from "../services/exerciseService";
 import { queryDatabase } from "../config/db";
 import { weightSet } from "../types/express";
 import { averageWeightPerRep } from "../helpers/setTransformation";
-import { processExerciseData, readSetsFile, transformToIndividualSets } from "../helpers/fileReading";
+import {
+  processExerciseData,
+  readSetsFile,
+  transformToIndividualSets,
+} from "../helpers/fileReading";
 interface MulterRequest extends Request {
   file?: Express.Multer.File; // Define the 'file' property
 }
@@ -25,7 +30,7 @@ export async function handleSetCreation(req: Request, res: Response) {
       req.user.userid,
       payload.exercise_name
     );
-    
+
     switch (payload.exercise_type) {
       case "weight":
         if (
@@ -44,7 +49,7 @@ export async function handleSetCreation(req: Request, res: Response) {
             exercise_id,
             payload.exercise_name
           );
-          
+
           // add notes to it if there were notes
           if (payload.notes != "") {
             const newId: string = createdSetID;
@@ -211,7 +216,7 @@ export async function handleDeleteSet(req: Request, res: Response) {
 // import weights
 export async function handleImportSetsFile(req: MulterRequest, res: Response) {
   try {
-    const userId = req.user.userid as string
+    const userId = req.user.userid as string;
     if (req.file?.path) {
       readSetsFile(req.file.path, userId).then(async (exrciseDataArray) => {
         // const test = transformToIndividualSets(exrciseDataArray)
@@ -227,15 +232,23 @@ export async function handleImportSetsFile(req: MulterRequest, res: Response) {
 
 export async function handleEditSet(req: Request, res: Response) {
   try {
-    const date = req.body.payload.date_worked
-    const weight = req.body.payload.weight
-    const reps = req.body.payload.reps
-    const setID = req.params.set_id
-    const userID = req.user.userid
-    await editSet(date, weight, reps, setID, userID)
+    const date = req.body.payload.date_worked;
+    const weight = req.body.payload.weight;
+    const reps = req.body.payload.reps;
+    const setID = req.params.set_id;
+    const userID = req.user.userid;
+    await editSet(date, weight, reps, setID, userID);
     return res.status(201).json({ message: "Edited Set!" });
-  }
-  catch(error) {
+  } catch (error) {
     return res.status(401).json({ message: "Couldn't Edit Set" });
+  }
+}
+
+export async function handleDeleteAllSets(req: Request, res: Response) {
+  try {
+    await deleteAllSets(req.user.userid);
+    return res.status(201).json({ message: "Deleted All Sets!" });
+  } catch (error) {
+    return res.status(401).json({ message: "Failed to delete sets" });
   }
 }
