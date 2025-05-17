@@ -11,10 +11,11 @@ import {
   getMaxesForEachExercise,
 } from "../services/setsService";
 import { getExerciseID } from "../services/exerciseService";
-import { queryDatabase } from "../config/db";
+import { importExerciseSetsToDatabase, queryDatabase } from "../config/db";
 import { weightSet } from "../types/express";
 import { averageWeightPerRep } from "../helpers/setTransformation";
 import {
+  createExerciseIDMap,
   processExerciseData,
   readSetsFile,
   transformToIndividualSets,
@@ -217,13 +218,11 @@ export async function handleDeleteSet(req: Request, res: Response) {
 // import weights
 export async function handleImportSetsFile(req: MulterRequest, res: Response) {
   try {
-    const userId = req.user.userid as string;
+    let userId = req.user.userid as string;
+    const exerciseMap = await createExerciseIDMap(userId);
     if (req.file?.path) {
-      readSetsFile(req.file.path, userId).then(async (exrciseDataArray) => {
-        // const test = transformToIndividualSets(exrciseDataArray)
-        // console.log(test)
-        // processExerciseData(exrciseDataArray, userId)
-      });
+      const exerciseArray = await readSetsFile(req.file.path, userId, exerciseMap);
+      await importExerciseSetsToDatabase(transformToIndividualSets(exerciseArray), userId)
     }
     return res.status(201).json({ message: "Imported Sets" });
   } catch (err) {

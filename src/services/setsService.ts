@@ -169,9 +169,32 @@ export async function deleteAllSets(user_id: string) {
 
 export async function getMaxesForEachExercise(userid: string) {
   try {
-    const maxes = await queryDatabase(
-      "SELECT s.user_id,s.exercise_id, s.date_worked, e.exercise_name, MAX(s.weight) AS max_weight, COUNT(*) AS total_sets, s.reps FROM sets s JOIN exercises e ON s.exercise_id = e.exercise_id WHERE  s.user_id = ? GROUP BY  s.user_id, s.exercise_id, e.exercise_name ORDER BY  e.exercise_name;",[userid]
-    );
+   const maxes = await queryDatabase(
+  `SELECT s.user_id, s.exercise_id, s.date_worked, e.exercise_name, s.weight AS max_weight, 
+   s.reps, total_sets.total_sets
+   FROM sets s
+   JOIN exercises e ON s.exercise_id = e.exercise_id
+   JOIN (
+     SELECT user_id, exercise_id, MAX(weight) AS max_weight
+     FROM sets
+     WHERE user_id = ?
+     GROUP BY user_id, exercise_id
+   ) max_weights ON s.user_id = max_weights.user_id 
+     AND s.exercise_id = max_weights.exercise_id 
+     AND s.weight = max_weights.max_weight
+   JOIN (
+     SELECT user_id, exercise_id, COUNT(*) AS total_sets
+     FROM sets
+     WHERE user_id = ?
+     GROUP BY user_id, exercise_id
+   ) total_sets ON s.user_id = total_sets.user_id 
+     AND s.exercise_id = total_sets.exercise_id
+   WHERE s.user_id = ?
+   GROUP BY s.user_id, s.exercise_id, e.exercise_name
+   ORDER BY e.exercise_name`,
+  [userid, userid, userid]
+);
+    console.log(maxes)
     return maxes
 
   } catch (err) {

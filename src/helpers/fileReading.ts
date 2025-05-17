@@ -1,5 +1,7 @@
 import { formatDate } from "./dates";
 import { getExerciseID } from "../services/exerciseService";
+import { queryDatabase } from "../config/db";
+import { hash } from "crypto";
 const Fs = require("fs");
 const CsvReadableStream = require("csv-reader");
 interface ExerciseData {
@@ -14,7 +16,7 @@ interface ExerciseSet {
   exerciseName: string;
   date: string;
   weight: number;
-  rep: number;
+  reps: number;
   exercise_id: string;
 }
 
@@ -70,11 +72,30 @@ export const transformToIndividualSets = (
       exerciseName: exercise.exerciseName,
       date: exercise.date,
       weight: weight,
-      rep: exercise.reps[index],
+      reps: exercise.reps[index],
       exercise_id: exercise.exercise_id,
     }));
   });
 };
+
+export async function createExerciseIDMap(userId: string) {
+  try {
+    const results = await queryDatabase(
+      "SELECT * FROM exercises WHERE user_id = ? or is_default = 1",
+      [userId]
+    );
+    let exerciseMap: Record<string, string> = {};
+
+    for (let i = 0; i < results.length; i++) {
+      const exercise_name = results[i].exercise_name;
+      const exercise_id = results[i].exercise_id;
+      exerciseMap[exercise_name] =  exercise_id;
+    }
+    return exerciseMap;
+  } catch (err) {
+    throw err;
+  }
+}
 
 /**
  * Parses the CSV data from a file and returns a Promise that resolves with an array
@@ -86,7 +107,8 @@ export const transformToIndividualSets = (
  */
 export async function readSetsFile(
   fileName: string,
-  user_id: string
+  user_id: string,
+  exerciseMap: Record<string, string>
 ): Promise<ExerciseData[]> {
   return new Promise((resolve, reject) => {
     const inputStream = Fs.createReadStream(fileName, "utf8");
@@ -101,10 +123,10 @@ export async function readSetsFile(
             skipLines: 1, // Skip the header row
           })
         )
-        .on("data", async (row: any) => {
-          let exercise_id;
+        .on("data", (row: any) => {
           const exerciseName = row[0].trim();
-          exercise_id = await getExerciseID(user_id, exerciseName);
+          const exercise_id = exerciseMap[exerciseName] as string;
+          
 
           const filteredRow = row.filter(
             (cell: any) =>
@@ -114,13 +136,6 @@ export async function readSetsFile(
           );
 
           for (let i = 1; i < filteredRow.length; i += 3) {
-            const newRow: ExerciseData = {
-              exerciseName: exerciseName,
-              date: "",
-              weights: [],
-              reps: [],
-              exercise_id: "0",
-            };
             // Extract date, weights, and reps for the current set
             const date = filteredRow[i].toString().trim();
             let weights = filteredRow[i + 1].toString().trim();
@@ -128,17 +143,17 @@ export async function readSetsFile(
             let reps = filteredRow[i + 2].toString().trim();
             reps = reps.split("|");
 
-            // Append the date, weights, and reps to the structured row in order
-            newRow.date = date;
-            newRow.reps = reps;
-            newRow.weights = weights;
-            // newRow.exercise_id = exercise_id
-            exerciseDataArray.push(newRow);
+            exerciseDataArray.push({
+              exerciseName,
+              date,
+              weights,
+              reps,
+              exercise_id, 
+            });
           }
         })
         .on("end", () => {
           Fs.unlink(fileName, (err: any) => {
-            //Keep the unlink
             if (err) {
               reject(err);
             } else {
@@ -149,7 +164,7 @@ export async function readSetsFile(
         .on("error", (err: any) => {
           reject(err); // Reject the Promise on error
         });
-
+        
       return exerciseDataArray;
     } catch (err) {
       throw err;
