@@ -8,6 +8,7 @@ import {
   deleteSet,
   editSet,
   deleteAllSets,
+  getMaxesForEachExercise,
 } from "../services/setsService";
 import { getExerciseID } from "../services/exerciseService";
 import { queryDatabase } from "../config/db";
@@ -255,7 +256,8 @@ export async function handleDeleteAllSets(req: Request, res: Response) {
 
 export async function handleGetMaxesForEachExercise(req: Request, res:Response) {
   try {
-    return res.status(201).json({message: "Test"})
+    const maxList = await getMaxesForEachExercise(req.user.userid);
+    return res.status(201).json({message: "Test", maxList: maxList})
   }
   catch (err) {
     return res.status(401).json({ message: "Failed to get maxes" });

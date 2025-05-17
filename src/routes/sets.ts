@@ -1,7 +1,5 @@
-import { get } from "http";
 import { handleDeleteAllSets, handleDeleteSet, handleEditSet, handleGetAllSetsForExercise, handleGetAllSetsForUser, handleGetMaxesForEachExercise, handleImportSetsFile, handleSetCreation } from "../controllers/setsController";
 import authenticateToken from "../helpers/auth";
-import { getgid } from "process";
 
 
 
@@ -20,8 +18,9 @@ router.get("/", authenticateToken, (handleGetAllSetsForUser))
 
 /*Get all weight type sets for a specific exercise_id
  Params passed: exercise_id */
-router.get("/:exercise_id", authenticateToken, (handleGetAllSetsForExercise))
-router.get("/maxes", authenticateToken, (handleGetMaxesForEachExercise))
+router.get("/getSets/:exercise_id", authenticateToken, (handleGetAllSetsForExercise))
+
+router.get("/getMaxes", authenticateToken, (handleGetMaxesForEachExercise))
 
 /* DELETE REQUESTS */
 router.delete("/:set_id", authenticateToken, (handleDeleteSet))
