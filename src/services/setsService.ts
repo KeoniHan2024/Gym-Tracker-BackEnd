@@ -152,17 +152,30 @@ export async function editSet(
   try {
     await queryDatabase(
       "UPDATE sets SET date_worked = ?, weight = ?, reps = ? WHERE (set_id = ? AND user_id = ?)",
-    [date, weight, reps, set_id, userID]);
+      [date, weight, reps, set_id, userID]
+    );
   } catch (err) {
     throw err;
   }
 }
 
 export async function deleteAllSets(user_id: string) {
-try {
-    await queryDatabase("DELETE FROM sets WHERE user_id = ?;",[user_id])
+  try {
+    await queryDatabase("DELETE FROM sets WHERE user_id = ?;", [user_id]);
+  } catch (err) {
+    throw err;
   }
-  catch (err) {
-    throw err
+}
+
+export async function getMaxesForEachExercise() {
+  try {
+    const maxes = await queryDatabase(
+      "SELECT s.user_id,s.exercise_id, e.exercise_name, -- Assuming you have an exercises table MAX(s.weight) AS max_weight, COUNT(*) AS total_sets FROM sets s JOIN exercises e ON s.exercise_id = e.id -- Join with exercises table if you have one WHERE  s.user_id = [USER_ID] -- Replace [USER_ID] with the actual user ID GROUP BY  s.user_id, s.exercise_id, e.exercise_name ORDER BY  e.exercise_name;"
+    );
+
+    console.log(maxes)
+
+  } catch (err) {
+    throw err;
   }
 }

@@ -30,8 +30,8 @@ export async function getUserAndDefaultExercises(userid: string) {
 
 export async function getNonEmptyUserExercises(userid: string) {
   const exerciseList = await queryDatabase(
-    "SELECT DISTINCT e.* FROM sets s, exercises e WHERE e.exercise_id = s.exercise_id AND (e.user_id = ? OR e.is_default = 1)",
-    [userid]
+    "SELECT DISTINCT e.* FROM exercises e JOIN sets s ON e.exercise_id = s.exercise_id WHERE s.user_id = ? AND (e.user_id = ? OR e.is_default = 1)",
+    [userid, userid]
   );
   return exerciseList;
 }

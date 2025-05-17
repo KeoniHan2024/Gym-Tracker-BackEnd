@@ -252,3 +252,12 @@ export async function handleDeleteAllSets(req: Request, res: Response) {
     return res.status(401).json({ message: "Failed to delete sets" });
   }
 }
+
+export async function handleGetMaxesForEachExercise(req: Request, res:Response) {
+  try {
+    return res.status(201).json({message: "Test"})
+  }
+  catch (err) {
+    return res.status(401).json({ message: "Failed to get maxes" });
+  }
+}
